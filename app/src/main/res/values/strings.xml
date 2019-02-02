@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">BeaconObserver</string>
+    <string name="bluetooth_scan_btn_txt">Bluetooth Scan</string>
+</resources>
