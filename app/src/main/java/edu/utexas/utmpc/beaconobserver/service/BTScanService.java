@@ -1,31 +1,52 @@
 package edu.utexas.utmpc.beaconobserver.service;
 
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.util.List;
 import java.util.Random;
+
+import edu.utexas.utmpc.beaconobserver.utility.BeaconCache;
+import edu.utexas.utmpc.beaconobserver.utility.StaconBeacon;
 
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.OPERATION_FAIL;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.OPERATION_SUCCEED;
+import static edu.utexas.utmpc.beaconobserver.utility.Constant.SCAN_INTERVAL_MS;
+import static edu.utexas.utmpc.beaconobserver.utility.Constant.SCAN_PERIOD_MS;
 
 public class BTScanService extends Service {
     private static final String TAG = "BTScanService";
 
-    public static final int START_SCAN = 0;
-    public static final int STOP_SCAN = 1;
+    public static final int ENABLE_SCAN = 0;
+    public static final int DISABLE_SCAN = 1;
+
 
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
     // Random number generator
     private final Random mGenerator = new Random();
 
-    private boolean serviceRunning = false;
+    private boolean mServiceEnabled = false;
 
-    private Handler handler = new Handler();
+    private boolean mScanning = false;
+
+    private Handler mHandler = new Handler();
+
+    private BluetoothAdapter mBTAdapter;
+
+    private BluetoothLeScanner mBTLeScanner;
+
+    private BeaconCache cache;
+
+    private ScanCallback mScanCallback;
 
     public class LocalBinder extends Binder {
         public BTScanService getService() {
@@ -52,21 +73,22 @@ public class BTScanService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(TAG, "onBind");
+        cache = BeaconCache.getInstance();
         return mBinder;
     }
 
     public int scan(int command) {
         switch (command) {
-            case START_SCAN:
-                Log.d(TAG, "startBeaconScan");
-                handler.post(dummyTask);
-                serviceRunning = true;
+            case ENABLE_SCAN:
+                Log.d(TAG, "Enable Scan");
+                startScan();
+                mServiceEnabled = true;
                 break;
-            case STOP_SCAN:
-                if (serviceRunning) {
-                    Log.d(TAG, "stopBeaconScan");
-                    handler.removeCallbacks(dummyTask);
-                    serviceRunning = false;
+            case DISABLE_SCAN:
+                if (mServiceEnabled) {
+                    Log.d(TAG, "Disable Scan");
+                    mServiceEnabled = false;
+                    stopScan();
                 }
                 break;
             default:
@@ -76,19 +98,61 @@ public class BTScanService extends Service {
         return OPERATION_SUCCEED;
     }
 
-    public boolean isServiceRunning() {
-        return serviceRunning;
+    private int startScan() {
+        Log.d(TAG, "Start scanning.");
+        mBTAdapter = BluetoothAdapter.getDefaultAdapter();
+        mScanCallback = new BTScanCallback();
+        mBTLeScanner = mBTAdapter.getBluetoothLeScanner();
+        // TODO(liuchg): Add scan setting here.
+        mBTLeScanner.startScan(mScanCallback);
+        mScanning = true;
+        mHandler.postDelayed(this::stopScan, SCAN_PERIOD_MS);
+        return OPERATION_SUCCEED;
     }
 
-    private Runnable dummyTask = new Runnable() {
-        @Override
-        public void run() {
-            Log.d(TAG, "Dummy task: " + mGenerator.nextInt(100));
-            // Repeat this the same runnable code block again another 2 seconds
-            // 'this' is referencing the Runnable object
-            handler.postDelayed(this, 2000);
+    private int stopScan() {
+        Log.d(TAG, "Stop scanning.");
+        if (mScanning && mBTAdapter != null && mBTAdapter.isEnabled() && mBTLeScanner != null) {
+            mBTLeScanner.stopScan(mScanCallback);
+            finishScan();
         }
-    };
+        mScanCallback = null;
+        mScanning = false;
+        if (mServiceEnabled) {
+            mHandler.postDelayed(this::startScan, SCAN_INTERVAL_MS - SCAN_PERIOD_MS);
+        }
+        return OPERATION_SUCCEED;
+    }
+
+    private void finishScan() {
+        Log.d(TAG, "finish scan: cache size = " + cache.size());
+    }
+
+    private class BTScanCallback extends ScanCallback {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            super.onScanResult(callbackType, result);
+            //TODO(liuchg): Process all beacons or add a filter.
+            addScanResult(result);
+        }
+
+        @Override
+        public void onBatchScanResults(List<ScanResult> results) {
+            for (ScanResult result : results) {
+                addScanResult(result);
+            }
+        }
+
+        @Override
+        public void onScanFailed(int errorCode) {
+            Log.e(TAG, "BLE Scan Failed with code " + errorCode);
+        }
+
+        private void addScanResult(ScanResult result) {
+            cache.put(result.getDevice().getAddress(),
+                    new StaconBeacon(result.getScanRecord().getBytes()));
+        }
+    }
 
 
 }
