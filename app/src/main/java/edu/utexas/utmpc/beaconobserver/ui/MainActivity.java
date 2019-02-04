@@ -12,12 +12,21 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.CompoundButton;
+import android.widget.ListView;
 import android.widget.Switch;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
 
 import edu.utexas.utmpc.beaconobserver.R;
 import edu.utexas.utmpc.beaconobserver.service.BTScanService;
+import edu.utexas.utmpc.beaconobserver.utility.StaconBeacon;
 
 import static edu.utexas.utmpc.beaconobserver.service.BTScanService.ENABLE_SCAN;
 import static edu.utexas.utmpc.beaconobserver.service.BTScanService.DISABLE_SCAN;
@@ -30,16 +39,18 @@ public class MainActivity extends AppCompatActivity {
     private BTScanService mScanService;
     boolean mBound = false;
     BluetoothAdapter mBTAdapter;
+    private List<StaconBeacon> beacons;
 
     /* UI components */
     private Switch mScanSwitch;
+    private RecyclerView mRecyclerView;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
 
         setContentView(R.layout.activity_main);
-        mScanSwitch = (Switch) findViewById(R.id.scan_switch);
+        mScanSwitch = findViewById(R.id.scan_switch);
         mScanSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!mBound) {
@@ -49,6 +60,33 @@ public class MainActivity extends AppCompatActivity {
                 mScanService.scan(isChecked ? ENABLE_SCAN : DISABLE_SCAN);
             }
         });
+
+        mRecyclerView = findViewById(R.id.rv);
+
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(llm);
+        mRecyclerView.setHasFixedSize(true);
+
+        initializeData();
+        initializeAdapter();
+    }
+
+    private void initializeData() {
+        beacons = new ArrayList<>();
+        BitSet cap = new BitSet();
+        cap.set(1);
+        cap.set(6);
+        for (int i = 0; i < 5; ++i) {
+            StaconBeacon sb = new StaconBeacon();
+            sb.setDisplayName("Device " + i);
+            sb.setCapabilities(cap);
+            beacons.add(sb);
+        }
+    }
+
+    private void initializeAdapter() {
+        RVAdapter adapter = new RVAdapter(beacons);
+        mRecyclerView.setAdapter(adapter);
     }
 
     @Override protected void onStart() {

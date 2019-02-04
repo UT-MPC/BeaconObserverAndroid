@@ -31,7 +31,7 @@ public class StaconBeacon implements Beacon {
     byte[] beaconContent;
     BitSet capabilities;
     BitSet desires;
-    Context context;
+    ContextInformation contextInformation;
     Timestamp timestamp;
 
 
@@ -44,12 +44,15 @@ public class StaconBeacon implements Beacon {
         this.desires = bytesToBitSet(beaconContent, NODE_DESIRE_OFFSET, NODE_DESIRE_LEN);
         int contextType = bytesToInt(beaconContent, CONTEXT_TYPE_OFFSET, 1);
 
-        //TODO(liuchg): Validate type and construct context object
-        this.context = new Context(contextType,
+        //TODO(liuchg): Validate type and construct contextInformation object
+        this.contextInformation = new ContextInformation(contextType,
                 bytesToFloat(beaconContent, CONTEXT_VALUE1_OFFSET, CONTEXT_VALUE_LEN),
                 bytesToFloat(beaconContent, CONTEXT_VALUE2_OFFSET, CONTEXT_VALUE_LEN));
 
         this.timestamp = new Timestamp(System.currentTimeMillis());
+    }
+
+    public StaconBeacon() {
     }
 
     @Override
@@ -69,7 +72,36 @@ public class StaconBeacon implements Beacon {
 
     @Override
     public String toString() {
-        return displayName + " (" + timestamp + ") " + context;
+        return displayName + " (" + timestamp + ") " + contextInformation;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public void setDeviceAddress(String deviceAddress) {
+        this.deviceAddress = deviceAddress;
+    }
+
+    public void setBeaconContent(byte[] beaconContent) {
+        this.beaconContent = beaconContent;
+    }
+
+    public void setCapabilities(BitSet capabilities) {
+        this.capabilities = capabilities;
+    }
+
+    public void setDesires(BitSet desires) {
+        this.desires = desires;
+    }
+
+    public void setContextInformation(
+            ContextInformation contextInformation) {
+        this.contextInformation = contextInformation;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getCapabilityString() {
