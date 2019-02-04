@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:fontFamily="sans-serif-medium"
     tools:context=".ui.MainActivity">
+
+    <ImageView
+        android:id="@+id/percom_logo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="15dp"
+        android:src="@drawable/mpc_banner"/>
+    
+
 
     <Switch
         android:id="@+id/scan_switch"
         android:text="@string/bluetooth_scan_btn_txt"
+        android:paddingTop="5dp"
+        android:switchPadding="10dp"
+        android:textSize="18sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:layout_gravity="right"/>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
