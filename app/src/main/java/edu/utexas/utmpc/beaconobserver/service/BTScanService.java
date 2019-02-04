@@ -4,13 +4,16 @@ import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -21,6 +24,7 @@ import static edu.utexas.utmpc.beaconobserver.utility.Constant.OPERATION_FAIL;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.OPERATION_SUCCEED;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.SCAN_INTERVAL_MS;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.SCAN_PERIOD_MS;
+import static edu.utexas.utmpc.beaconobserver.utility.StaconBeacon.verifyBeacon;
 
 public class BTScanService extends Service {
     private static final String TAG = "BTScanService";
@@ -44,6 +48,10 @@ public class BTScanService extends Service {
 
     private BluetoothLeScanner mBTLeScanner;
 
+    private List<ScanFilter> mScanFilters;
+
+    private ScanSettings mScanSettings;
+
     private BeaconCache cache;
 
     private ScanCallback mScanCallback;
@@ -63,6 +71,10 @@ public class BTScanService extends Service {
     public void onCreate() {
         Log.d(TAG, "onCreate");
         super.onCreate();
+        ScanSettings.Builder scanSettingsBuilder = new ScanSettings.Builder();
+        scanSettingsBuilder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY);    // scan mode
+        mScanSettings = scanSettingsBuilder.build();
+        mScanFilters = new ArrayList<>();
     }
 
     @Override
@@ -103,8 +115,7 @@ public class BTScanService extends Service {
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         mScanCallback = new BTScanCallback();
         mBTLeScanner = mBTAdapter.getBluetoothLeScanner();
-        // TODO(liuchg): Add scan setting here.
-        mBTLeScanner.startScan(mScanCallback);
+        mBTLeScanner.startScan(mScanFilters, mScanSettings, mScanCallback);
         mScanning = true;
         mHandler.postDelayed(this::stopScan, SCAN_PERIOD_MS);
         return OPERATION_SUCCEED;
@@ -132,7 +143,6 @@ public class BTScanService extends Service {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
-            //TODO(liuchg): Process all beacons or add a filter.
             addScanResult(result);
         }
 
@@ -149,10 +159,13 @@ public class BTScanService extends Service {
         }
 
         private void addScanResult(ScanResult result) {
-            cache.put(result.getDevice().getAddress(),
-                    new StaconBeacon(result.getScanRecord().getBytes()));
+            if (verifyBeacon(result)) {
+                StaconBeacon sBcn =
+                        new StaconBeacon(result.getScanRecord(), result.getDevice().getAddress());
+                cache.put(result.getDevice().getAddress(), sBcn);
+//                Log.d(TAG, "Found Stacon beacon: " + sBcn.getName() + ", cap:" + sBcn
+//                        .getCapabilityString());
+            }
         }
     }
-
-
 }
