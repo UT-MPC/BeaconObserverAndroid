@@ -1,8 +1,6 @@
 package edu.utexas.utmpc.beaconobserver.utility;
 
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.BitSet;
 
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.CONTEXT_TYPE_SIZE;

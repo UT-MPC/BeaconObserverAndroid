@@ -39,7 +39,11 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
     public void onBindViewHolder(BeaconViewHolder beaconViewHolder, int i) {
         StaconBeacon sb = (StaconBeacon) beaconList.get(i);
         beaconViewHolder.deviceName.setText(sb.getName());
-        beaconViewHolder.deviceCap.setText(sb.getDeviceAddress());
+        beaconViewHolder.deviceAddr.setText(sb.getDeviceAddress());
+        beaconViewHolder.deviceCap.setText(sb.getCapabilityString());
+        beaconViewHolder.contextInfo
+                .setText((sb.getContextInformation() == null) ? "Idle" : sb.getContextInformation()
+                        .toString());
     }
 
     @Override
@@ -58,13 +62,17 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
     static class BeaconViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         TextView deviceName;
+        TextView deviceAddr;
         TextView deviceCap;
+        TextView contextInfo;
 
         BeaconViewHolder(View itemView) {
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.cv);
             deviceName = (TextView) itemView.findViewById(R.id.device_name);
+            deviceAddr = (TextView) itemView.findViewById(R.id.device_addr);
             deviceCap = (TextView) itemView.findViewById(R.id.device_cap);
+            contextInfo = (TextView) itemView.findViewById(R.id.context_info);
         }
     }
 }

@@ -28,10 +28,25 @@
                 android:textSize="30sp" />
 
             <TextView
+                android:id="@+id/device_addr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/device_name"
+                android:textSize="10sp"/>
+
+            <TextView
                 android:id="@+id/device_cap"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/device_name" />
+                android:layout_toRightOf="@+id/device_name"
+                android:layout_alignParentTop="true"/>
+
+            <TextView
+                android:id="@+id/context_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/device_cap"
+                android:layout_toRightOf="@+id/device_name"/>
 
         </RelativeLayout>
 

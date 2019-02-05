@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.BitSet;
 
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.CONTEXT_TYPE_SIZE;
+import static edu.utexas.utmpc.beaconobserver.utility.Constant.STACON_TASK_OFFSET;
 import static edu.utexas.utmpc.beaconobserver.utility.Converter.bytesToBitSet;
 import static edu.utexas.utmpc.beaconobserver.utility.Converter.bytesToFloat;
 import static edu.utexas.utmpc.beaconobserver.utility.Converter.bytesToInt;
@@ -43,11 +44,14 @@ public class StaconBeacon implements Beacon {
                 bytesToBitSet(beaconContent, NODE_CAPABILITY_OFFSET, NODE_CAPABILITY_LEN);
         this.desires = bytesToBitSet(beaconContent, NODE_DESIRE_OFFSET, NODE_DESIRE_LEN);
         int contextType = bytesToInt(beaconContent, CONTEXT_TYPE_OFFSET, 1);
-
-        //TODO(liuchg): Validate type and construct contextInformation object
-        this.contextInformation = new ContextInformation(contextType,
-                bytesToFloat(beaconContent, CONTEXT_VALUE1_OFFSET, CONTEXT_VALUE_LEN),
-                bytesToFloat(beaconContent, CONTEXT_VALUE2_OFFSET, CONTEXT_VALUE_LEN));
+//        Log.d("StaconBeacon","raw: " + bytesToHex(scanRecord.getBytes()));
+        if (contextType >= STACON_TASK_OFFSET) {
+            int realType = contextType - STACON_TASK_OFFSET;
+            this.contextInformation =
+                    new ContextInformation(ContextInformation.ContextType.values()[realType],
+                            bytesToFloat(beaconContent, CONTEXT_VALUE1_OFFSET, CONTEXT_VALUE_LEN),
+                            bytesToFloat(beaconContent, CONTEXT_VALUE2_OFFSET, CONTEXT_VALUE_LEN));
+        }
 
         this.timestamp = new Timestamp(System.currentTimeMillis());
     }
@@ -100,12 +104,17 @@ public class StaconBeacon implements Beacon {
         this.contextInformation = contextInformation;
     }
 
+    public ContextInformation getContextInformation() {
+        return contextInformation;
+    }
+
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
 
     public String getCapabilityString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("Device Capability: ");
         for (int i = 0; i < CONTEXT_TYPE_SIZE; ++i) {
             sb.append(i).append(':').append(capabilities.get(i)).append(',');
         }

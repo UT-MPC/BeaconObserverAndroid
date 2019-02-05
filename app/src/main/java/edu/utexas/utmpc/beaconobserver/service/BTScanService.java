@@ -15,8 +15,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
@@ -191,8 +189,6 @@ public class BTScanService extends Service {
                 StaconBeacon sBcn =
                         new StaconBeacon(result.getScanRecord(), result.getDevice().getAddress());
                 cache.put(result.getDevice().getAddress(), sBcn);
-//                Log.d(TAG, "Found Stacon beacon: " + sBcn.getName() + ", cap:" + sBcn
-//                        .getCapabilityString());
             }
         }
     }

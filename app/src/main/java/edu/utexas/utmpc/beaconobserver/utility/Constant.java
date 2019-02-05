@@ -13,8 +13,11 @@ public class Constant {
 
     public static final int CONVERSION_FAIL = -11;
 
-    public static final int CONTEXT_TYPE_SIZE = 32;
+    public static final int CONTEXT_TYPE_SIZE = 16;
 
     public static final String UPDATE_INTENT_NAME = "UI_UPDATE";
     public static final String BEACON_LIST_INTENT = "beacon_list";
+
+    // Below need to be consistent with C defs.
+    public static final int STACON_TASK_OFFSET = 1;
 }
