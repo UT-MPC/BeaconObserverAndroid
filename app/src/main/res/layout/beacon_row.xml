@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_toEndOf="@+id/device_name"
-                android:fontFamily="sans-serif-condensed"
+                android:fontFamily="sans-serif-black"
                 android:layout_toStartOf="@+id/context_icon"
                 android:textSize="18sp"/>
 
@@ -50,6 +50,15 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/context_info"
                 android:layout_toEndOf="@+id/device_name"
+                android:layout_toStartOf="@+id/context_icon"/>
+
+            <TextView
+                android:id="@+id/timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/device_cap"
+                android:layout_toEndOf="@+id/device_name"
+                android:fontFamily="sans-serif-thin"
                 android:layout_toStartOf="@+id/context_icon"/>
 
             <ImageView

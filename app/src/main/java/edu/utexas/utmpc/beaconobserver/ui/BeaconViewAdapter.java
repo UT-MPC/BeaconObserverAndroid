@@ -43,6 +43,7 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
         beaconViewHolder.deviceNameTextView.setText(sb.getName());
         beaconViewHolder.deviceAddrTextView.setText(sb.getDeviceAddress());
         beaconViewHolder.deviceCapTextView.setText(sb.getCapabilityString());
+        beaconViewHolder.timestampTextView.setText("Last received beacon: " + sb.getTimestamp());
         ContextInformation contextInformation = sb.getContextInformation();
         if (contextInformation == null) {
             beaconViewHolder.contextInfoTextView.setText("Idle");
@@ -74,6 +75,7 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
         TextView deviceAddrTextView;
         TextView deviceCapTextView;
         TextView contextInfoTextView;
+        TextView timestampTextView;
         ImageView iconImageView;
 
         BeaconViewHolder(View itemView) {
@@ -83,6 +85,7 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
             deviceAddrTextView = itemView.findViewById(R.id.device_addr);
             deviceCapTextView = itemView.findViewById(R.id.device_cap);
             contextInfoTextView = itemView.findViewById(R.id.context_info);
+            timestampTextView = itemView.findViewById(R.id.timestamp);
             iconImageView = itemView.findViewById(R.id.context_icon);
         }
     }

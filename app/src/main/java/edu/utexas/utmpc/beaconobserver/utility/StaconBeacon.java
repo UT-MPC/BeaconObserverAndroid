@@ -112,11 +112,17 @@ public class StaconBeacon implements Beacon {
         this.timestamp = timestamp;
     }
 
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
     public String getCapabilityString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Device Capability: ");
         for (int i = 0; i < CONTEXT_TYPE_SIZE; ++i) {
-            sb.append(i).append(':').append(capabilities.get(i)).append(',');
+            if (capabilities.get(i)) {
+                sb.append(i).append(',');
+            }
         }
         if (sb.length() > 0) {
             sb.deleteCharAt(sb.length() - 1);
