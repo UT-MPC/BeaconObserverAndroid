@@ -2,35 +2,36 @@ package edu.utexas.utmpc.beaconobserver.ui;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.CompoundButton;
-import android.widget.ListView;
 import android.widget.Switch;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.List;
 
 import edu.utexas.utmpc.beaconobserver.R;
 import edu.utexas.utmpc.beaconobserver.service.BTScanService;
-import edu.utexas.utmpc.beaconobserver.utility.StaconBeacon;
+import edu.utexas.utmpc.beaconobserver.utility.Beacon;
 
 import static edu.utexas.utmpc.beaconobserver.service.BTScanService.ENABLE_SCAN;
 import static edu.utexas.utmpc.beaconobserver.service.BTScanService.DISABLE_SCAN;
+import static edu.utexas.utmpc.beaconobserver.utility.Constant.BEACON_LIST_INTENT;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.REQUEST_ENABLE_BT;
+import static edu.utexas.utmpc.beaconobserver.utility.Constant.UPDATE_INTENT_NAME;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -39,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
     private BTScanService mScanService;
     boolean mBound = false;
     BluetoothAdapter mBTAdapter;
-    private List<StaconBeacon> beacons;
 
     /* UI components */
     private Switch mScanSwitch;
     private RecyclerView mRecyclerView;
+    private BeaconViewAdapter mRecyclerViewAdapter;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,28 +66,15 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(llm);
-        mRecyclerView.setHasFixedSize(true);
+//        mRecyclerView.setHasFixedSize(true);
 
-        initializeData();
-        initializeAdapter();
-    }
+        // Hook up the RV mRecyclerViewAdapter with the cache
+        mRecyclerViewAdapter = new BeaconViewAdapter();
+        mRecyclerView.setAdapter(mRecyclerViewAdapter);
 
-    private void initializeData() {
-        beacons = new ArrayList<>();
-        BitSet cap = new BitSet();
-        cap.set(1);
-        cap.set(6);
-        for (int i = 0; i < 5; ++i) {
-            StaconBeacon sb = new StaconBeacon();
-            sb.setDisplayName("Device " + i);
-            sb.setCapabilities(cap);
-            beacons.add(sb);
-        }
-    }
-
-    private void initializeAdapter() {
-        RVAdapter adapter = new RVAdapter(beacons);
-        mRecyclerView.setAdapter(adapter);
+        // Register broadcast receiver to pass the content updates to UI
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(mBroadcastReceiver, new IntentFilter(UPDATE_INTENT_NAME));
     }
 
     @Override protected void onStart() {
@@ -105,12 +93,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override protected void onDestroy() {
-        super.onDestroy();
         Log.d(TAG, "onDestroy");
         if (mBound) {
             unbindService(mConnection);
             mBound = false;
         }
+        if (mBroadcastReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
+            mBroadcastReceiver = null;
+        }
+        super.onDestroy();
     }
 
     private void checkBTPermission() {
@@ -125,6 +117,19 @@ public class MainActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_ENABLE_BT);
         }
     }
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "Received broadcast.");
+            ArrayList<Beacon> beaconArrayList =
+                    (ArrayList<Beacon>) intent.getSerializableExtra(BEACON_LIST_INTENT);
+            if (mRecyclerViewAdapter != null) {
+                mRecyclerViewAdapter.setBeaconList(beaconArrayList);
+                mRecyclerViewAdapter.notifyDataSetChanged();
+            }
+        }
+    };
 
     /**
      * Defines callbacks for service binding, passed to bindService()

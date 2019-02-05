@@ -11,19 +11,27 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
+import edu.utexas.utmpc.beaconobserver.utility.Beacon;
 import edu.utexas.utmpc.beaconobserver.utility.BeaconCache;
 import edu.utexas.utmpc.beaconobserver.utility.StaconBeacon;
 
+import static edu.utexas.utmpc.beaconobserver.utility.Constant.BEACON_LIST_INTENT;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.OPERATION_FAIL;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.OPERATION_SUCCEED;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.SCAN_INTERVAL_MS;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.SCAN_PERIOD_MS;
+import static edu.utexas.utmpc.beaconobserver.utility.Constant.UPDATE_INTENT_NAME;
 import static edu.utexas.utmpc.beaconobserver.utility.StaconBeacon.verifyBeacon;
 
 public class BTScanService extends Service {
@@ -56,6 +64,12 @@ public class BTScanService extends Service {
 
     private ScanCallback mScanCallback;
 
+    private List<Beacon> prevResult; // For updating the UI
+
+    private BeaconNameComparator beaconNameComparator;
+
+    private LocalBroadcastManager mLocalBroadcastManager;
+
     public class LocalBinder extends Binder {
         public BTScanService getService() {
             // Return this instance of BTScanService so clients can call public methods
@@ -73,8 +87,9 @@ public class BTScanService extends Service {
         super.onCreate();
         ScanSettings.Builder scanSettingsBuilder = new ScanSettings.Builder();
         scanSettingsBuilder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY);    // scan mode
-        mScanSettings = scanSettingsBuilder.build();
-        mScanFilters = new ArrayList<>();
+        this.mScanSettings = scanSettingsBuilder.build();
+        this.mScanFilters = new ArrayList<>();
+        this.beaconNameComparator = new BeaconNameComparator();
     }
 
     @Override
@@ -86,6 +101,7 @@ public class BTScanService extends Service {
     public IBinder onBind(Intent intent) {
         Log.d(TAG, "onBind");
         cache = BeaconCache.getInstance();
+        mLocalBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
         return mBinder;
     }
 
@@ -136,7 +152,19 @@ public class BTScanService extends Service {
     }
 
     private void finishScan() {
-        Log.d(TAG, "finish scan: cache size = " + cache.size());
+        List<Beacon> curResult = new ArrayList<>(cache.values());
+        if (prevResult != null && prevResult.equals(curResult)) {
+            return;
+        }
+        prevResult = curResult;
+        ArrayList<Beacon> beaconList = cache.isEmpty() ? new ArrayList<>() : prevResult.stream()
+                .sorted(beaconNameComparator).collect(
+                        Collectors.toCollection(ArrayList::new));
+        Log.d(TAG, "Beacon list changed: cache size = " + cache.size());
+        Intent updateIntent = new Intent(UPDATE_INTENT_NAME);
+        updateIntent.putExtra(BEACON_LIST_INTENT, beaconList);
+        mLocalBroadcastManager.sendBroadcast(updateIntent);
+
     }
 
     private class BTScanCallback extends ScanCallback {
@@ -166,6 +194,12 @@ public class BTScanService extends Service {
 //                Log.d(TAG, "Found Stacon beacon: " + sBcn.getName() + ", cap:" + sBcn
 //                        .getCapabilityString());
             }
+        }
+    }
+
+    class BeaconNameComparator implements Comparator<Beacon> {
+        public int compare(Beacon b1, Beacon b2) {
+            return b1.getName().compareTo(b2.getName());
         }
     }
 }
