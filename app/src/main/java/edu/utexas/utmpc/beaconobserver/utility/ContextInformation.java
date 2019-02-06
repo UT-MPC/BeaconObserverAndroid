@@ -7,7 +7,14 @@ import java.util.Map;
 
 import edu.utexas.utmpc.beaconobserver.R;
 
+import static edu.utexas.utmpc.beaconobserver.utility.Converter.bytesToFloat;
+import static edu.utexas.utmpc.beaconobserver.utility.StaconBeacon.CONTEXT_VALUE1_OFFSET;
+import static edu.utexas.utmpc.beaconobserver.utility.StaconBeacon.CONTEXT_VALUE2_OFFSET;
+import static edu.utexas.utmpc.beaconobserver.utility.StaconBeacon.CONTEXT_VALUE_LEN;
+
 public class ContextInformation {
+    public static final char CELCIUS = '\u2103';
+
     public enum ContextType {
         TEMPERATURE,
         HUMIDITY,
@@ -17,7 +24,8 @@ public class ContextInformation {
     }
 
     public static final Map<ContextType, Integer> ContextIconMap;
-    static{
+
+    static {
         ContextIconMap = new HashMap<>();
         ContextIconMap.put(ContextType.TEMPERATURE, R.drawable.icon_temp);
         ContextIconMap.put(ContextType.HUMIDITY, R.drawable.icon_humidity);
@@ -34,6 +42,37 @@ public class ContextInformation {
         this.contextType = contextType;
         this.value1 = value1;
         this.value2 = value2;
+    }
+
+    public ContextInformation(ContextType contextType, byte[] raw_bytes) {
+        this.contextType = contextType;
+        switch (contextType) {
+            case TEMPERATURE:
+                int tempDec = raw_bytes[CONTEXT_VALUE1_OFFSET];
+                int tempInt = raw_bytes[CONTEXT_VALUE1_OFFSET + 1];
+                value1 = tempInt + (tempDec / 10);
+                break;
+            case HUMIDITY:
+                value1 = (int) raw_bytes[CONTEXT_VALUE1_OFFSET];
+                break;
+            case Air_PRESSURE:
+                int preInt = raw_bytes[CONTEXT_VALUE1_OFFSET];
+                int preDec = raw_bytes[CONTEXT_VALUE1_OFFSET + 1];
+                value1 = preInt + (preDec / 10);
+                break;
+            case COLOR:
+                value1 =
+                        (int) ((raw_bytes[CONTEXT_VALUE1_OFFSET] << 8) + raw_bytes[CONTEXT_VALUE1_OFFSET + 1]) << 16;
+                value1 +=
+                        (int) ((raw_bytes[CONTEXT_VALUE1_OFFSET + 2] << 8) + raw_bytes[CONTEXT_VALUE1_OFFSET + 3]);
+                value2 =
+                        (int) ((raw_bytes[CONTEXT_VALUE2_OFFSET] << 8) + raw_bytes[CONTEXT_VALUE2_OFFSET + 1]) << 16;
+                value2 +=
+                        (int) ((raw_bytes[CONTEXT_VALUE2_OFFSET + 2] << 8) + raw_bytes[CONTEXT_VALUE2_OFFSET + 3]); // clear
+                break;
+            default:
+                value1 = bytesToFloat(raw_bytes, CONTEXT_VALUE1_OFFSET, CONTEXT_VALUE_LEN);
+        }
     }
 
     public ContextType getContextType() {
@@ -63,7 +102,32 @@ public class ContextInformation {
 
     @Override
     public String toString() {
-        return "Shared Context: " + StringUtils
-                .capitalize(contextType.name()) + ", value: " + value1 + ", " + value2 + ".";
+        StringBuilder sb =
+                new StringBuilder(
+                        "(Shared Context) " + StringUtils.capitalize(contextType.name()) + ": ");
+        switch (contextType) {
+            case TEMPERATURE:
+                sb.append(String.format("%.2f ", value1));
+                sb.append(CELCIUS);
+                break;
+            case HUMIDITY:
+                sb.append(String.format("%.0f %%RH", value1));
+                break;
+            case Air_PRESSURE:
+                sb.append(String.format("%.2f hPa", value1));
+                break;
+            case COLOR:
+                int red = (int) (value1) >> 16;
+                int green = (int) (value1) & 0xFFFF;
+                int blue = (int) (value2) >> 16;
+                int clear = (int) (value2) & 0xFFFF;
+                sb.append(String.format("Red: %d, Green %d, Blue %d (clear: %d)", red, green, blue,
+                        clear));
+                break;
+            default:
+                sb.append("raw value").append(value1);
+        }
+
+        return sb.toString();
     }
 }

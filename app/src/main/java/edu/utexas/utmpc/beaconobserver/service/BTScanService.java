@@ -38,7 +38,6 @@ public class BTScanService extends Service {
     public static final int ENABLE_SCAN = 0;
     public static final int DISABLE_SCAN = 1;
 
-
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
     // Random number generator
@@ -158,7 +157,7 @@ public class BTScanService extends Service {
         ArrayList<Beacon> beaconList = cache.isEmpty() ? new ArrayList<>() : prevResult.stream()
                 .sorted(beaconNameComparator).collect(
                         Collectors.toCollection(ArrayList::new));
-        Log.d(TAG, "Beacon list changed: cache size = " + cache.size());
+//        Log.d(TAG, "Beacon list changed: cache size = " + cache.size());
         Intent updateIntent = new Intent(UPDATE_INTENT_NAME);
         updateIntent.putExtra(BEACON_LIST_INTENT, beaconList);
         mLocalBroadcastManager.sendBroadcast(updateIntent);

@@ -63,10 +63,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mRecyclerView = findViewById(R.id.rv);
-
         LinearLayoutManager llm = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(llm);
-//        mRecyclerView.setHasFixedSize(true);
 
         // Hook up the RV mRecyclerViewAdapter with the cache
         mRecyclerViewAdapter = new BeaconViewAdapter();
@@ -121,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "Received broadcast.");
             ArrayList<Beacon> beaconArrayList =
                     (ArrayList<Beacon>) intent.getSerializableExtra(BEACON_LIST_INTENT);
             if (mRecyclerViewAdapter != null) {

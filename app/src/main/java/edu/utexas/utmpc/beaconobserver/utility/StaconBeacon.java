@@ -16,16 +16,16 @@ public class StaconBeacon implements Beacon {
 
     // these are the first four bytes expected in any BLEnd packet
     public static final byte[] beaconPrefix = {0x02, 0x01, 0x04, 0x1B, (byte) 0xFE, (byte) 0x8B};
-    private static final int NODE_ID_OFFSET = 6;
-    private static final int NODE_ID_LEN = 1;
-    private static final int NODE_CAPABILITY_OFFSET = 7;
-    private static final int NODE_CAPABILITY_LEN = 2;
-    private static final int NODE_DESIRE_OFFSET = 9;
-    private static final int NODE_DESIRE_LEN = 2;
-    private static final int CONTEXT_TYPE_OFFSET = 11;
-    private static final int CONTEXT_VALUE1_OFFSET = 12;
-    private static final int CONTEXT_VALUE2_OFFSET = 16;
-    private static final int CONTEXT_VALUE_LEN = 4;
+    static final int NODE_ID_OFFSET = 6;
+    static final int NODE_ID_LEN = 1;
+    static final int NODE_CAPABILITY_OFFSET = 7;
+    static final int NODE_CAPABILITY_LEN = 2;
+    static final int NODE_DESIRE_OFFSET = 9;
+    static final int NODE_DESIRE_LEN = 2;
+    static final int CONTEXT_TYPE_OFFSET = 11;
+    static final int CONTEXT_VALUE1_OFFSET = 12;
+    static final int CONTEXT_VALUE2_OFFSET = 16;
+    static final int CONTEXT_VALUE_LEN = 4;
 
     String displayName;
     String deviceAddress;
@@ -49,8 +49,7 @@ public class StaconBeacon implements Beacon {
             int realType = contextType - STACON_TASK_OFFSET;
             this.contextInformation =
                     new ContextInformation(ContextInformation.ContextType.values()[realType],
-                            bytesToFloat(beaconContent, CONTEXT_VALUE1_OFFSET, CONTEXT_VALUE_LEN),
-                            bytesToFloat(beaconContent, CONTEXT_VALUE2_OFFSET, CONTEXT_VALUE_LEN));
+                            beaconContent);
         }
 
         this.timestamp = new Timestamp(System.currentTimeMillis());
