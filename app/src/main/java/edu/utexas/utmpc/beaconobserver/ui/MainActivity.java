@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
@@ -22,10 +23,14 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.utexas.utmpc.beaconobserver.R;
 import edu.utexas.utmpc.beaconobserver.service.BTScanService;
 import edu.utexas.utmpc.beaconobserver.utility.Beacon;
+import lecho.lib.hellocharts.model.PieChartData;
+import lecho.lib.hellocharts.model.SliceValue;
+import lecho.lib.hellocharts.view.PieChartView;
 
 import static edu.utexas.utmpc.beaconobserver.service.BTScanService.DISABLE_SCAN;
 import static edu.utexas.utmpc.beaconobserver.service.BTScanService.ENABLE_SCAN;
@@ -45,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
     private Switch mScanSwitch;
     private RecyclerView mRecyclerView;
     private BeaconViewAdapter mRecyclerViewAdapter;
+    private PieChartView mPieChartView;
+    private List<SliceValue> mPieData;
+    private PieChartData mPieChartData;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +73,12 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.rv);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(llm);
+
+        mPieChartView = findViewById(R.id.pie_chart);
+        mPieChartData = new PieChartData(generatePieData(null)).setHasLabels(true);
+        mPieChartData.setHasCenterCircle(true).setCenterText1("Nearby Capability")
+                .setCenterText1FontSize(10).setCenterText1Color(Color.parseColor("#0097A7"));
+        mPieChartView.setPieChartData(mPieChartData);
 
         // Hook up the RV mRecyclerViewAdapter with the cache
         mRecyclerViewAdapter = new BeaconViewAdapter();
@@ -116,14 +130,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private List<SliceValue> generatePieData(List<Beacon> beaconList) {
+        List<SliceValue> sliceData = new ArrayList<>();
+        if (beaconList == null || beaconList.isEmpty()) {
+            sliceData.add(new SliceValue(100, Color.GRAY).setLabel("None"));
+            return sliceData;
+        }
+        sliceData.add(new SliceValue(50, Color.YELLOW).setLabel("One"));
+        sliceData.add(new SliceValue(50, Color.MAGENTA).setLabel("Two"));
+        return sliceData;
+    }
+
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             ArrayList<Beacon> beaconArrayList =
                     (ArrayList<Beacon>) intent.getSerializableExtra(BEACON_LIST_INTENT);
+            // Update beacon status list.
             if (mRecyclerViewAdapter != null) {
                 mRecyclerViewAdapter.setBeaconList(beaconArrayList);
                 mRecyclerViewAdapter.notifyDataSetChanged();
+            }
+            // Update nearby cap. pie chart.
+            if (mPieChartView != null) {
+                mPieChartData.setValues(generatePieData(beaconArrayList));
+                mPieChartView.setPieChartData(mPieChartData);
             }
         }
     };

@@ -8,29 +8,55 @@
     android:fontFamily="sans-serif-medium"
     tools:context=".ui.MainActivity">
 
-    <ImageView
-        android:id="@+id/percom_logo"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="15dp"
-        android:src="@drawable/mpc_banner"/>
-
-    <Switch
-        android:id="@+id/scan_switch"
-        android:text="@string/bluetooth_scan_btn_txt"
-        android:paddingTop="5dp"
-        android:switchPadding="@dimen/element_default_margin"
-        android:textSize="18sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv"
-        android:layout_height="match_parent"
+    <LinearLayout
+        android:id="@+id/top_panel"
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_margin="@dimen/element_default_margin"
-        />
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:layout_weight="1" >
+
+        <ImageView
+            android:id="@+id/percom_logo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="15dp"
+            android:src="@drawable/mpc_banner"/>
+
+        <Switch
+            android:id="@+id/scan_switch"
+            android:text="@string/bluetooth_scan_btn_txt"
+            android:paddingTop="5dp"
+            android:switchPadding="@dimen/element_default_margin"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_margin="@dimen/element_default_margin" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_panel"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_margin="5dp"
+        android:background="#EFEFEF"
+        android:orientation="horizontal"
+        android:layout_weight="3">
+
+        <lecho.lib.hellocharts.view.PieChartView
+            android:id="@+id/pie_chart"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -157,6 +157,7 @@ public class BTScanService extends Service {
         ArrayList<Beacon> beaconList = cache.isEmpty() ? new ArrayList<>() : prevResult.stream()
                 .sorted(beaconNameComparator).collect(
                         Collectors.toCollection(ArrayList::new));
+
 //        Log.d(TAG, "Beacon list changed: cache size = " + cache.size());
         Intent updateIntent = new Intent(UPDATE_INTENT_NAME);
         updateIntent.putExtra(BEACON_LIST_INTENT, beaconList);
