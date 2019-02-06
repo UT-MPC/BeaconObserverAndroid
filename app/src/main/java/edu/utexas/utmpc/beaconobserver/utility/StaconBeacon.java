@@ -103,12 +103,28 @@ public class StaconBeacon implements Beacon {
         this.contextInformation = contextInformation;
     }
 
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public ContextInformation getContextInformation() {
         return contextInformation;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public byte[] getBeaconContent() {
+        return beaconContent;
+    }
+
+    public BitSet getCapabilities() {
+        return capabilities;
+    }
+
+    public BitSet getDesires() {
+        return desires;
     }
 
     public Timestamp getTimestamp() {

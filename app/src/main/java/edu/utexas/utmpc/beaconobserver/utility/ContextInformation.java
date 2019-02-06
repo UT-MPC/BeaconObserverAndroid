@@ -1,5 +1,7 @@
 package edu.utexas.utmpc.beaconobserver.utility;
 
+import android.graphics.Color;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -32,6 +34,17 @@ public class ContextInformation {
         ContextIconMap.put(ContextType.Air_PRESSURE, R.drawable.icon_air_pressure);
         ContextIconMap.put(ContextType.COLOR, R.drawable.icon_color);
         ContextIconMap.put(ContextType.IDLE, R.drawable.icon_idle);
+    }
+
+    public static final Map<ContextType, Integer> ContextColorMap;
+
+    static {
+        ContextColorMap = new HashMap<>();
+        ContextColorMap.put(ContextType.TEMPERATURE, Color.parseColor("#ffe135"));
+        ContextColorMap.put(ContextType.HUMIDITY, Color.parseColor("#80c197"));
+        ContextColorMap.put(ContextType.Air_PRESSURE, Color.parseColor("#915c83"));
+        ContextColorMap.put(ContextType.COLOR, Color.parseColor("#89cff0"));
+        ContextColorMap.put(ContextType.IDLE, Color.parseColor("#848482"));
     }
 
     private ContextType contextType;

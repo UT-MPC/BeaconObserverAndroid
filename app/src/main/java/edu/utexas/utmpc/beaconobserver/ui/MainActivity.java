@@ -23,11 +23,15 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.utexas.utmpc.beaconobserver.R;
 import edu.utexas.utmpc.beaconobserver.service.BTScanService;
 import edu.utexas.utmpc.beaconobserver.utility.Beacon;
+import edu.utexas.utmpc.beaconobserver.utility.ContextInformation;
+import edu.utexas.utmpc.beaconobserver.utility.StaconBeacon;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.SliceValue;
 import lecho.lib.hellocharts.view.PieChartView;
@@ -35,8 +39,10 @@ import lecho.lib.hellocharts.view.PieChartView;
 import static edu.utexas.utmpc.beaconobserver.service.BTScanService.DISABLE_SCAN;
 import static edu.utexas.utmpc.beaconobserver.service.BTScanService.ENABLE_SCAN;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.BEACON_LIST_INTENT;
+import static edu.utexas.utmpc.beaconobserver.utility.Constant.CONTEXT_TYPE_SIZE;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.REQUEST_ENABLE_BT;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.UPDATE_INTENT_NAME;
+import static edu.utexas.utmpc.beaconobserver.utility.ContextInformation.ContextColorMap;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -136,8 +142,24 @@ public class MainActivity extends AppCompatActivity {
             sliceData.add(new SliceValue(100, Color.GRAY).setLabel("None"));
             return sliceData;
         }
-        sliceData.add(new SliceValue(50, Color.YELLOW).setLabel("One"));
-        sliceData.add(new SliceValue(50, Color.MAGENTA).setLabel("Two"));
+        int sum = 0;
+        Map<ContextInformation.ContextType, Integer> resourceMap = new HashMap<>();
+        for (Beacon staconBeacon : beaconList) {
+            if (staconBeacon instanceof StaconBeacon) {
+                for (int ctype = 0; ctype < CONTEXT_TYPE_SIZE; ++ctype) {
+                    if (((StaconBeacon) staconBeacon).getCapabilities().get(ctype)) {
+                        ContextInformation.ContextType contextType =
+                                ContextInformation.ContextType.values()[ctype];
+                        resourceMap.put(contextType, resourceMap.getOrDefault(resourceMap, 0) + 1);
+                        ++sum;
+                    }
+                }
+            }
+        }
+        for (ContextInformation.ContextType key : resourceMap.keySet()) {
+            sliceData.add(new SliceValue((resourceMap.get(key) * 100) / sum,
+                    ContextColorMap.get(key)).setLabel(key.name()));
+        }
         return sliceData;
     }
 
