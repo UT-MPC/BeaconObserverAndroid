@@ -49,14 +49,22 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_margin="5dp"
-        android:background="#EFEFEF"
+        android:background="#f5f5f5"
         android:orientation="horizontal"
         android:layout_weight="3">
 
         <lecho.lib.hellocharts.view.PieChartView
             android:id="@+id/pie_chart"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <lecho.lib.hellocharts.view.LineChartView
+            android:id="@+id/context_model"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
     </LinearLayout>
 
 </LinearLayout>

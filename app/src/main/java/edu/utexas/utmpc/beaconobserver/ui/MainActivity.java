@@ -32,8 +32,16 @@ import edu.utexas.utmpc.beaconobserver.service.BTScanService;
 import edu.utexas.utmpc.beaconobserver.utility.Beacon;
 import edu.utexas.utmpc.beaconobserver.utility.ContextInformation;
 import edu.utexas.utmpc.beaconobserver.utility.StaconBeacon;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.AxisValue;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PieChartData;
+import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SliceValue;
+import lecho.lib.hellocharts.model.ValueShape;
+import lecho.lib.hellocharts.util.ChartUtils;
+import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PieChartView;
 
 import static edu.utexas.utmpc.beaconobserver.service.BTScanService.DISABLE_SCAN;
@@ -57,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private BeaconViewAdapter mRecyclerViewAdapter;
     private PieChartView mPieChartView;
-    private List<SliceValue> mPieData;
     private PieChartData mPieChartData;
+    private LineChartView mLineChartView;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +94,10 @@ public class MainActivity extends AppCompatActivity {
                 .setCenterText1FontSize(10).setCenterText1Color(Color.parseColor("#0097A7"));
         mPieChartView.setPieChartData(mPieChartData);
 
+        mLineChartView = findViewById(R.id.context_model);
+        generateContextModel();
+
+
         // Hook up the RV mRecyclerViewAdapter with the cache
         mRecyclerViewAdapter = new BeaconViewAdapter();
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
@@ -93,6 +105,40 @@ public class MainActivity extends AppCompatActivity {
         // Register broadcast receiver to pass the content updates to UI
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(mBroadcastReceiver, new IntentFilter(UPDATE_INTENT_NAME));
+    }
+
+    private void generateContextModel() {
+
+        List<Line> lines = new ArrayList<>();
+        List<PointValue> values = new ArrayList<>();
+        List<AxisValue> axisValues = new ArrayList<AxisValue>();
+        int numCtx = ContextInformation.ContextType.values().length - 1;
+
+        for (int i = 0; i < numCtx; ++i) {
+            ContextInformation.ContextType contextType = ContextInformation.ContextType.values()[i];
+            values.add(new PointValue(i, numCtx - i));
+            axisValues.add(new AxisValue(i, contextType.name().toCharArray()));
+        }
+        Line line = new Line(values);
+        line.setColor(Color.parseColor("#7d7793"));
+        line.setCubic(true);
+        line.setFilled(true);
+        line.setHasLabelsOnlyForSelected(true);
+        line.setHasLines(true);
+        line.setHasPoints(true);
+        lines.add(line);
+        LineChartData data = new LineChartData(lines);
+
+        Axis axisX = new Axis(axisValues);
+        Axis axisY = new Axis().setHasLines(true);
+
+        axisY.setName("Context Importance");
+
+        data.setAxisXBottom(axisX);
+        data.setAxisYLeft(axisY);
+
+        data.setBaseValue(Float.NEGATIVE_INFINITY);
+        mLineChartView.setLineChartData(data);
     }
 
     @Override protected void onStart() {
