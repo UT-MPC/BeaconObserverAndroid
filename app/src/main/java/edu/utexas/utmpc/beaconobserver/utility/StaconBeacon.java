@@ -136,7 +136,7 @@ public class StaconBeacon implements Beacon {
         sb.append("Device Capability: ");
         for (int i = 0; i < CONTEXT_TYPE_SIZE; ++i) {
             if (capabilities.get(i)) {
-                sb.append(i).append(',');
+                sb.append(ContextInformation.ContextType.values()[i].name()).append(',');
             }
         }
         if (sb.length() > 0) {

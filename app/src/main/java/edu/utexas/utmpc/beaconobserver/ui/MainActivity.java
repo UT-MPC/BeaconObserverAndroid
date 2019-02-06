@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                     if (((StaconBeacon) staconBeacon).getCapabilities().get(ctype)) {
                         ContextInformation.ContextType contextType =
                                 ContextInformation.ContextType.values()[ctype];
-                        resourceMap.put(contextType, resourceMap.getOrDefault(resourceMap, 0) + 1);
+                        resourceMap.put(contextType, resourceMap.getOrDefault(contextType, 0) + 1);
                         ++sum;
                     }
                 }
@@ -174,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void generateContextModel() {
-
         List<Line> lines = new ArrayList<>();
         List<PointValue> values = new ArrayList<>();
         List<AxisValue> axisValues = new ArrayList<AxisValue>();
