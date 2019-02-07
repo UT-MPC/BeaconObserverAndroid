@@ -18,10 +18,10 @@ public class ContextInformation {
     public static final char CELCIUS = '\u2103';
 
     public enum ContextType {
-        TEMPERATURE,
-        HUMIDITY,
-        Air_PRESSURE,
-        COLOR,
+        Temperature,
+        Humidity,
+        Air_Pressure,
+        Color,
         IDLE,
     }
 
@@ -29,10 +29,10 @@ public class ContextInformation {
 
     static {
         ContextIconMap = new HashMap<>();
-        ContextIconMap.put(ContextType.TEMPERATURE, R.drawable.icon_temp);
-        ContextIconMap.put(ContextType.HUMIDITY, R.drawable.icon_humidity);
-        ContextIconMap.put(ContextType.Air_PRESSURE, R.drawable.icon_air_pressure);
-        ContextIconMap.put(ContextType.COLOR, R.drawable.icon_color);
+        ContextIconMap.put(ContextType.Temperature, R.drawable.icon_temp);
+        ContextIconMap.put(ContextType.Humidity, R.drawable.icon_humidity);
+        ContextIconMap.put(ContextType.Air_Pressure, R.drawable.icon_air_pressure);
+        ContextIconMap.put(ContextType.Color, R.drawable.icon_color);
         ContextIconMap.put(ContextType.IDLE, R.drawable.icon_idle);
     }
 
@@ -40,10 +40,10 @@ public class ContextInformation {
 
     static {
         ContextColorMap = new HashMap<>();
-        ContextColorMap.put(ContextType.TEMPERATURE, Color.parseColor("#ffe135"));
-        ContextColorMap.put(ContextType.HUMIDITY, Color.parseColor("#80c197"));
-        ContextColorMap.put(ContextType.Air_PRESSURE, Color.parseColor("#915c83"));
-        ContextColorMap.put(ContextType.COLOR, Color.parseColor("#89cff0"));
+        ContextColorMap.put(ContextType.Temperature, Color.parseColor("#ffe135"));
+        ContextColorMap.put(ContextType.Humidity, Color.parseColor("#80c197"));
+        ContextColorMap.put(ContextType.Air_Pressure, Color.parseColor("#915c83"));
+        ContextColorMap.put(ContextType.Color, Color.parseColor("#89cff0"));
         ContextColorMap.put(ContextType.IDLE, Color.parseColor("#848482"));
     }
 
@@ -60,20 +60,20 @@ public class ContextInformation {
     public ContextInformation(ContextType contextType, byte[] raw_bytes) {
         this.contextType = contextType;
         switch (contextType) {
-            case TEMPERATURE:
+            case Temperature:
                 int tempDec = raw_bytes[CONTEXT_VALUE1_OFFSET];
                 int tempInt = raw_bytes[CONTEXT_VALUE1_OFFSET + 1];
                 value1 = tempInt + (tempDec / 10);
                 break;
-            case HUMIDITY:
+            case Humidity:
                 value1 = (int) raw_bytes[CONTEXT_VALUE1_OFFSET];
                 break;
-            case Air_PRESSURE:
+            case Air_Pressure:
                 int preInt = raw_bytes[CONTEXT_VALUE1_OFFSET];
                 int preDec = raw_bytes[CONTEXT_VALUE1_OFFSET + 1];
                 value1 = preInt + (preDec / 10);
                 break;
-            case COLOR:
+            case Color:
                 value1 =
                         (int) ((raw_bytes[CONTEXT_VALUE1_OFFSET] << 8) + raw_bytes[CONTEXT_VALUE1_OFFSET + 1]) << 16;
                 value1 +=
@@ -119,17 +119,17 @@ public class ContextInformation {
                 new StringBuilder(
                         "(Shared Context) " + StringUtils.capitalize(contextType.name()) + ": ");
         switch (contextType) {
-            case TEMPERATURE:
+            case Temperature:
                 sb.append(String.format("%.2f ", value1));
                 sb.append(CELCIUS);
                 break;
-            case HUMIDITY:
+            case Humidity:
                 sb.append(String.format("%.0f %%RH", value1));
                 break;
-            case Air_PRESSURE:
+            case Air_Pressure:
                 sb.append(String.format("%.2f hPa", value1));
                 break;
-            case COLOR:
+            case Color:
                 int red = (int) (value1) >> 16;
                 int green = (int) (value1) & 0xFFFF;
                 int blue = (int) (value2) >> 16;

@@ -21,6 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,6 +50,7 @@ import static edu.utexas.utmpc.beaconobserver.utility.Constant.CONTEXT_TYPE_SIZE
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.REQUEST_ENABLE_BT;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.UPDATE_INTENT_NAME;
 import static edu.utexas.utmpc.beaconobserver.utility.ContextInformation.ContextColorMap;
+import static edu.utexas.utmpc.beaconobserver.utility.Matching.localSchedule;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private PieChartView mPieChartView;
     private PieChartData mPieChartData;
     private LineChartView mLineChartView;
+    private TextView mResultTextView;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
 
         mLineChartView = findViewById(R.id.context_model);
         generateContextModel();
+
+        mResultTextView = findViewById(R.id.local_result);
 
         // Hook up the RV mRecyclerViewAdapter with the cache
         mRecyclerViewAdapter = new BeaconViewAdapter();
@@ -206,6 +211,14 @@ public class MainActivity extends AppCompatActivity {
         mLineChartView.setLineChartData(data);
     }
 
+    private void updateScheduleTextView(List<Beacon> beaconList) {
+        if (beaconList == null || beaconList.isEmpty()) {
+            mResultTextView.setText(R.string.result_schedule_default);
+            return;
+        }
+        mResultTextView.setText(localSchedule(beaconList));
+    }
+
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -220,6 +233,9 @@ public class MainActivity extends AppCompatActivity {
             if (mPieChartView != null) {
                 mPieChartData.setValues(generatePieData(beaconArrayList));
                 mPieChartView.setPieChartData(mPieChartData);
+            }
+            if (mResultTextView != null) {
+                updateScheduleTextView(beaconArrayList);
             }
         }
     };

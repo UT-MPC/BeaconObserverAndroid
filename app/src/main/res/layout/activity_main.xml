@@ -63,11 +63,11 @@
             android:layout_weight="1" />
 
         <TextView
-            android:id="@+id/optimal_schedule"
+            android:id="@+id/local_result"
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="Optimal Schedule:\n (...)"
+            android:text="@string/result_schedule_default"
             android:layout_weight="1"/>
 
     </LinearLayout>
