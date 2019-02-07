@@ -13,4 +13,4 @@ Check [this repository](https://github.com/UT-MPC/BLEnd_Nordic/blob/master/READM
 ## Misc.
 <img src="figures/app_screenshot.png" width="600">
 
-<img src="figures/ex_setup.png" width="600">
+<img src="figures/ex_setup.jpg" width="600">
