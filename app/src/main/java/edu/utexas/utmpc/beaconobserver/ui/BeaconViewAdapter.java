@@ -43,7 +43,10 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
         beaconViewHolder.deviceNameTextView.setText(sb.getName());
         beaconViewHolder.deviceAddrTextView.setText(sb.getDeviceAddress());
         beaconViewHolder.deviceCapTextView.setText(sb.getCapabilityString());
-        beaconViewHolder.timestampTextView.setText("Last received beacon: " + sb.getTimestamp());
+        beaconViewHolder.timestampTextView.setText(
+                "Last received beacon: " + sb.getTimestamp());
+        beaconViewHolder.batteryLevelTextView
+                .setText("Battery level: " + sb.getBatteryLevel() + "%");
         ContextInformation contextInformation = sb.getContextInformation();
         if (contextInformation == null) {
             beaconViewHolder.contextInfoTextView.setText("Idle");
@@ -76,6 +79,7 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
         TextView deviceCapTextView;
         TextView contextInfoTextView;
         TextView timestampTextView;
+        TextView batteryLevelTextView;
         ImageView iconImageView;
 
         BeaconViewHolder(View itemView) {
@@ -86,6 +90,7 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
             deviceCapTextView = itemView.findViewById(R.id.device_cap);
             contextInfoTextView = itemView.findViewById(R.id.context_info);
             timestampTextView = itemView.findViewById(R.id.timestamp);
+            batteryLevelTextView = itemView.findViewById(R.id.battery_level);
             iconImageView = itemView.findViewById(R.id.context_icon);
         }
     }

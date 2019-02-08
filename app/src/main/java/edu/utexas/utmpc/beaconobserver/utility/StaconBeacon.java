@@ -9,7 +9,6 @@ import java.util.BitSet;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.CONTEXT_TYPE_SIZE;
 import static edu.utexas.utmpc.beaconobserver.utility.Constant.STACON_TASK_OFFSET;
 import static edu.utexas.utmpc.beaconobserver.utility.Converter.bytesToBitSet;
-import static edu.utexas.utmpc.beaconobserver.utility.Converter.bytesToFloat;
 import static edu.utexas.utmpc.beaconobserver.utility.Converter.bytesToInt;
 
 public class StaconBeacon implements Beacon {
@@ -26,6 +25,7 @@ public class StaconBeacon implements Beacon {
     static final int CONTEXT_VALUE1_OFFSET = 12;
     static final int CONTEXT_VALUE2_OFFSET = 16;
     static final int CONTEXT_VALUE_LEN = 4;
+    static final int BATTERY_LEVEL_OFFSET = 20;
 
     String displayName;
     String deviceAddress;
@@ -34,7 +34,7 @@ public class StaconBeacon implements Beacon {
     BitSet desires;
     ContextInformation contextInformation;
     Timestamp timestamp;
-
+    int batteryLevel;
 
     public StaconBeacon(ScanRecord scanRecord, String deviceAddress) {
         this.deviceAddress = deviceAddress;
@@ -53,6 +53,7 @@ public class StaconBeacon implements Beacon {
         }
 
         this.timestamp = new Timestamp(System.currentTimeMillis());
+        this.batteryLevel = (int) scanRecord.getBytes()[BATTERY_LEVEL_OFFSET];
     }
 
     public StaconBeacon() {
@@ -125,6 +126,14 @@ public class StaconBeacon implements Beacon {
 
     public BitSet getDesires() {
         return desires;
+    }
+
+    public int getBatteryLevel() {
+        return batteryLevel;
+    }
+
+    public void setBatteryLevel(int batteryLevel) {
+        this.batteryLevel = batteryLevel;
     }
 
     public Timestamp getTimestamp() {
