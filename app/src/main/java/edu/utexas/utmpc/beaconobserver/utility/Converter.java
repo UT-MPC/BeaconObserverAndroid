@@ -25,10 +25,11 @@ public class Converter {
     }
 
     public static float bytesToFloat(byte[] frame, int offset, int length) {
-        if (length != 4 || offset + length >= frame.length) {
-            return CONVERSION_FAIL;
+        byte[] h = new byte[length];
+        for(int i = 0; i < length; ++i) {
+            h[i] = frame[offset+length-i-1];
         }
-        return ByteBuffer.wrap(frame, offset, length).getFloat();
+        return ByteBuffer.wrap(h).getFloat();
     }
 
     public static BitSet bytesToBitSet(byte[] frame, int offset, int length) {

@@ -37,6 +37,9 @@ public class ContextInformation {
         ContextIconMap.put(ContextType.Humidity, R.drawable.icon_humidity);
         ContextIconMap.put(ContextType.Air_Pressure, R.drawable.icon_air_pressure);
         ContextIconMap.put(ContextType.Color, R.drawable.icon_color);
+        ContextIconMap.put(ContextType.VoC, R.drawable.icon_voc);
+        ContextIconMap.put(ContextType.Noise, R.drawable.icon_noise);
+        ContextIconMap.put(ContextType.Location, R.drawable.icon_location);
         ContextIconMap.put(ContextType.IDLE, R.drawable.icon_idle);
     }
 
@@ -48,6 +51,9 @@ public class ContextInformation {
         ContextColorMap.put(ContextType.Humidity, Color.parseColor("#80c197"));
         ContextColorMap.put(ContextType.Air_Pressure, Color.parseColor("#915c83"));
         ContextColorMap.put(ContextType.Color, Color.parseColor("#89cff0"));
+        ContextColorMap.put(ContextType.VoC, Color.parseColor("#767676"));
+        ContextColorMap.put(ContextType.Noise, Color.parseColor("#b63c87"));
+        ContextColorMap.put(ContextType.Location, Color.parseColor("#246bce"));
         ContextColorMap.put(ContextType.IDLE, Color.parseColor("#848482"));
     }
 
@@ -86,6 +92,10 @@ public class ContextInformation {
                         (int) ((raw_bytes[CONTEXT_VALUE2_OFFSET] << 8) + raw_bytes[CONTEXT_VALUE2_OFFSET + 1]) << 16;
                 value2 +=
                         (int) ((raw_bytes[CONTEXT_VALUE2_OFFSET + 2] << 8) + raw_bytes[CONTEXT_VALUE2_OFFSET + 3]); // clear
+                break;
+            case Location:
+                value1 = bytesToFloat(raw_bytes, CONTEXT_VALUE1_OFFSET, CONTEXT_VALUE_LEN);
+                value2 = bytesToFloat(raw_bytes, CONTEXT_VALUE2_OFFSET, CONTEXT_VALUE_LEN);
                 break;
             default:
                 value1 = bytesToFloat(raw_bytes, CONTEXT_VALUE1_OFFSET, CONTEXT_VALUE_LEN);
@@ -140,6 +150,10 @@ public class ContextInformation {
                 int clear = (int) (value2) & 0xFFFF;
                 sb.append(String.format("Red: %d, Green %d, Blue %d (clear: %d)", red, green, blue,
                         clear));
+                break;
+            case Location:
+                sb.append(String.format("Lat: %3.10f, Lon: %3.10f", value1, value2));
+//                sb.append("Lat: " + value1 + ", Lon: " + value2);
                 break;
             default:
                 sb.append("raw value").append(value1);
