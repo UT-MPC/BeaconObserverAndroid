@@ -1,6 +1,7 @@
 package edu.utexas.utmpc.beaconobserver.utility;
 
 import android.graphics.Color;
+import android.util.Log;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -64,17 +65,17 @@ public class ContextInformation {
         this.contextType = contextType;
         switch (contextType) {
             case Temperature:
-                int tempDec = raw_bytes[CONTEXT_VALUE1_OFFSET];
+                int tempDec = raw_bytes[CONTEXT_VALUE1_OFFSET] & 0xFF;
                 int tempInt = raw_bytes[CONTEXT_VALUE1_OFFSET + 1];
-                value1 = tempInt + (tempDec / 10);
+                value1 = tempInt + (tempDec / 100.0f);
                 break;
             case Humidity:
                 value1 = (int) raw_bytes[CONTEXT_VALUE1_OFFSET];
                 break;
             case Air_Pressure:
-                int preInt = raw_bytes[CONTEXT_VALUE1_OFFSET];
+                int preInt = raw_bytes[CONTEXT_VALUE1_OFFSET] & 0xFF;
                 int preDec = raw_bytes[CONTEXT_VALUE1_OFFSET + 1];
-                value1 = preInt + (preDec / 10);
+                value1 = preInt + (preDec / 100.f);
                 break;
             case Color:
                 value1 =
