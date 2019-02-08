@@ -22,6 +22,9 @@ public class ContextInformation {
         Humidity,
         Air_Pressure,
         Color,
+        VoC,
+        Noise,
+        Location,
         IDLE,
     }
 
