@@ -93,6 +93,12 @@ public class ContextInformation {
                 value2 +=
                         (int) ((raw_bytes[CONTEXT_VALUE2_OFFSET + 2] << 8) + raw_bytes[CONTEXT_VALUE2_OFFSET + 3]); // clear
                 break;
+            case VoC:
+                value1 =
+                        (int) (raw_bytes[CONTEXT_VALUE1_OFFSET] + (raw_bytes[CONTEXT_VALUE1_OFFSET + 1] << 8));
+                value2 =
+                        (int) (raw_bytes[CONTEXT_VALUE2_OFFSET] + (raw_bytes[CONTEXT_VALUE2_OFFSET + 1] << 8));
+                break;
             case Location:
                 value1 = bytesToFloat(raw_bytes, CONTEXT_VALUE1_OFFSET, CONTEXT_VALUE_LEN);
                 value2 = bytesToFloat(raw_bytes, CONTEXT_VALUE2_OFFSET, CONTEXT_VALUE_LEN);
@@ -150,6 +156,9 @@ public class ContextInformation {
                 int clear = (int) (value2) & 0xFFFF;
                 sb.append(String.format("Red: %d, Green %d, Blue %d (clear: %d)", red, green, blue,
                         clear));
+                break;
+            case VoC:
+                sb.append(String.format("CO2: %.0f (ppm), VoC: %.0f (ppb)", value1, value2));
                 break;
             case Location:
                 sb.append(String.format("Lat: %3.10f, Lon: %3.10f", value1, value2));
