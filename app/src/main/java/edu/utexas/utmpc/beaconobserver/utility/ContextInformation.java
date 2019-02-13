@@ -99,6 +99,8 @@ public class ContextInformation {
                 value2 =
                         (int) (raw_bytes[CONTEXT_VALUE2_OFFSET] + (raw_bytes[CONTEXT_VALUE2_OFFSET + 1] << 8));
                 break;
+            case Noise:
+                value1 = bytesToFloat(raw_bytes, CONTEXT_VALUE1_OFFSET, CONTEXT_VALUE_LEN);
             case Location:
                 value1 = bytesToFloat(raw_bytes, CONTEXT_VALUE1_OFFSET, CONTEXT_VALUE_LEN);
                 value2 = bytesToFloat(raw_bytes, CONTEXT_VALUE2_OFFSET, CONTEXT_VALUE_LEN);
@@ -159,6 +161,9 @@ public class ContextInformation {
                 break;
             case VoC:
                 sb.append(String.format("CO2: %.0f (ppm), VoC: %.0f (ppb)", value1, value2));
+                break;
+            case Noise:
+                sb.append(String.format("Sound level: %.3f ", value1));
                 break;
             case Location:
                 sb.append(String.format("Lat: %3.10f, Lon: %3.10f", value1, value2));
