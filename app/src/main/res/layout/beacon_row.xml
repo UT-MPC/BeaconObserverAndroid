@@ -64,9 +64,18 @@
                 android:id="@+id/battery_level"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
+                android:layout_marginLeft="8dp"
                 android:layout_alignTop="@+id/timestamp"
                 android:layout_toEndOf="@+id/timestamp"
+                android:fontFamily="sans-serif-thin" />
+
+            <TextView
+                android:id="@+id/rssi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_alignTop="@+id/battery_level"
+                android:layout_toEndOf="@+id/battery_level"
                 android:fontFamily="sans-serif-thin"
                 android:layout_toStartOf="@+id/context_icon" />
 

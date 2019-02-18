@@ -47,6 +47,7 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
                 "Last received beacon: " + sb.getTimestamp());
         beaconViewHolder.batteryLevelTextView
                 .setText("Battery level: " + sb.getBatteryLevel() + "%");
+        beaconViewHolder.rssiTextView.setText("RSSI: " + sb.getRssi());
         ContextInformation contextInformation = sb.getContextInformation();
         if (contextInformation == null) {
             beaconViewHolder.contextInfoTextView.setText("Idle");
@@ -80,6 +81,7 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
         TextView contextInfoTextView;
         TextView timestampTextView;
         TextView batteryLevelTextView;
+        TextView rssiTextView;
         ImageView iconImageView;
 
         BeaconViewHolder(View itemView) {
@@ -92,6 +94,7 @@ public class BeaconViewAdapter extends RecyclerView.Adapter<BeaconViewAdapter.Be
             timestampTextView = itemView.findViewById(R.id.timestamp);
             batteryLevelTextView = itemView.findViewById(R.id.battery_level);
             iconImageView = itemView.findViewById(R.id.context_icon);
+            rssiTextView = itemView.findViewById(R.id.rssi);
         }
     }
 }

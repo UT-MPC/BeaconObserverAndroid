@@ -187,7 +187,8 @@ public class BTScanService extends Service {
         private void addScanResult(ScanResult result) {
             if (verifyBeacon(result)) {
                 StaconBeacon sBcn =
-                        new StaconBeacon(result.getScanRecord(), result.getDevice().getAddress());
+                        new StaconBeacon(result.getScanRecord(), result.getDevice().getAddress(),
+                                result.getRssi());
                 cache.put(result.getDevice().getAddress(), sBcn);
             }
         }

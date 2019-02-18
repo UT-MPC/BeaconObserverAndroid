@@ -35,8 +35,9 @@ public class StaconBeacon implements Beacon {
     ContextInformation contextInformation;
     Timestamp timestamp;
     int batteryLevel;
+    int rssi;
 
-    public StaconBeacon(ScanRecord scanRecord, String deviceAddress) {
+    public StaconBeacon(ScanRecord scanRecord, String deviceAddress, int rssi) {
         this.deviceAddress = deviceAddress;
         this.beaconContent = scanRecord.getBytes();
         this.displayName = getNameFromBeacon();
@@ -54,6 +55,7 @@ public class StaconBeacon implements Beacon {
 
         this.timestamp = new Timestamp(System.currentTimeMillis());
         this.batteryLevel = (int) scanRecord.getBytes()[BATTERY_LEVEL_OFFSET];
+        this.rssi = rssi;
     }
 
     public StaconBeacon() {
@@ -138,6 +140,10 @@ public class StaconBeacon implements Beacon {
 
     public Timestamp getTimestamp() {
         return timestamp;
+    }
+
+    public int getRssi() {
+        return rssi;
     }
 
     public String getCapabilityString() {
