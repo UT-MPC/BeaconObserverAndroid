@@ -164,7 +164,11 @@ public class MainActivity extends AppCompatActivity {
                     if (((StaconBeacon) staconBeacon).getCapabilities().get(ctype)) {
                         ContextInformation.ContextType contextType =
                                 ContextInformation.ContextType.values()[ctype];
-                        resourceMap.put(contextType, resourceMap.getOrDefault(contextType, 0) + 1);
+                        if (resourceMap.containsKey(contextType)) {
+                            resourceMap.put(contextType, resourceMap.get(contextType) + 1);
+                        } else {
+                            resourceMap.put(contextType, 1);
+                        }
                         ++sum;
                     }
                 }

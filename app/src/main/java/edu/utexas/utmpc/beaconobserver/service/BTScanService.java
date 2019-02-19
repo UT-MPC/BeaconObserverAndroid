@@ -15,6 +15,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
@@ -154,9 +155,11 @@ public class BTScanService extends Service {
             return;
         }
         prevResult = curResult;
-        ArrayList<Beacon> beaconList = cache.isEmpty() ? new ArrayList<>() : prevResult.stream()
-                .sorted(beaconNameComparator).collect(
-                        Collectors.toCollection(ArrayList::new));
+        ArrayList<Beacon> beaconList = new ArrayList<>(prevResult);
+        Collections.sort(beaconList, beaconNameComparator);
+//        ArrayList<Beacon> beaconList = cache.isEmpty() ? new ArrayList<>() : prevResult.stream()
+//                .sorted(beaconNameComparator).collect(
+//                        Collectors.toCollection(ArrayList::new));
 
 //        Log.d(TAG, "Beacon list changed: cache size = " + cache.size());
         Intent updateIntent = new Intent(UPDATE_INTENT_NAME);
