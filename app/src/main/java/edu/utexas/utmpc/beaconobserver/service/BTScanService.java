@@ -136,7 +136,7 @@ public class BTScanService extends Service {
     }
 
     private int stopScan() {
-        Log.d(TAG, "Stop scanning.");
+        Log.d(TAG, "Stop scanning (" + cache.size() + ").");
         if (mScanning && mBTAdapter != null && mBTAdapter.isEnabled() && mBTLeScanner != null) {
             mBTLeScanner.stopScan(mScanCallback);
             finishScan();

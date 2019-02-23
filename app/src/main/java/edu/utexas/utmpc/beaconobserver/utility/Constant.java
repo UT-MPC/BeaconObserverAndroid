@@ -6,10 +6,10 @@ public class Constant {
     public static final int REQUEST_ENABLE_BT = 1;
 
     public static final int BLEND_LAMBDA_MS = 4000;
-    public static final int BEACON_VALID_DURATION_MS = BLEND_LAMBDA_MS * 2;
+    public static final int BEACON_VALID_DURATION_MS = (int) (BLEND_LAMBDA_MS * 2.5);
 
-    public static final int SCAN_PERIOD_MS = 5000;
-    public static final int SCAN_INTERVAL_MS = 6000;
+    public static final int SCAN_PERIOD_MS = 3000;
+    public static final int SCAN_INTERVAL_MS = 4000;
 
     public static final int CONVERSION_FAIL = -11;
 

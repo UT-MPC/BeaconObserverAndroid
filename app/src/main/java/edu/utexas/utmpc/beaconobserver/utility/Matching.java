@@ -1,12 +1,14 @@
 package edu.utexas.utmpc.beaconobserver.utility;
 
+import android.util.Log;
+
 import java.util.List;
 
 public class Matching {
-    public static int[][] convertToMatrix(List<Beacon> beaconList) {
+    public static double[][] convertToMatrix(List<Beacon> beaconList) {
         int m = beaconList.size();
-        int n = ContextInformation.ContextType.values().length;
-        int[][] matrix = n >= m ? new int[n][n] : new int[m][n];
+        int n = ContextInformation.ContextType.values().length - 1;
+        double[][] matrix = n >= m ? new double[n][n] : new double[m][n];
         for (int i = 0; i < matrix.length; ++i) {
             if (i < m) {
                 StaconBeacon sb = (StaconBeacon) beaconList.get(i);
@@ -23,10 +25,11 @@ public class Matching {
     }
 
     public static String localSchedule(List<Beacon> beaconList) {
-        Hungarian hungarian = new Hungarian(Matching.convertToMatrix(beaconList));
+        double[][] mat = Matching.convertToMatrix(beaconList);
+        HungarianAlgorithm hungarian = new HungarianAlgorithm(mat);
         StringBuilder sb = new StringBuilder();
         sb.append("Local Results: " + beaconList.size() + "\n");
-        int[] tasks = hungarian.getResult();
+        int[] tasks = hungarian.execute();
         for (int i = 0; i < beaconList.size(); ++i) {
             StaconBeacon node = (StaconBeacon) beaconList.get(i);
             if (node.getCapabilities().get(tasks[i])) {
