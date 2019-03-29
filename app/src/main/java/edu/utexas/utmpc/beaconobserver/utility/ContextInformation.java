@@ -1,7 +1,6 @@
 package edu.utexas.utmpc.beaconobserver.utility;
 
 import android.graphics.Color;
-import android.util.Log;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -95,9 +94,9 @@ public class ContextInformation {
                 break;
             case VoC:
                 value1 =
-                        (int) (raw_bytes[CONTEXT_VALUE1_OFFSET] + (raw_bytes[CONTEXT_VALUE1_OFFSET + 1] << 8));
+                        (raw_bytes[CONTEXT_VALUE1_OFFSET] & 0xFF) + ((raw_bytes[CONTEXT_VALUE1_OFFSET + 1] & 0xFF) << 8);
                 value2 =
-                        (int) (raw_bytes[CONTEXT_VALUE2_OFFSET] + (raw_bytes[CONTEXT_VALUE2_OFFSET + 1] << 8));
+                        (raw_bytes[CONTEXT_VALUE2_OFFSET] & 0xFF) + ((raw_bytes[CONTEXT_VALUE2_OFFSET + 1] & 0xFF) << 8);
                 break;
             case Noise:
                 value1 = bytesToFloat(raw_bytes, CONTEXT_VALUE1_OFFSET, CONTEXT_VALUE_LEN);
